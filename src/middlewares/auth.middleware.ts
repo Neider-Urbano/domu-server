@@ -13,6 +13,7 @@ declare global {
 export async function protect(req: Request, res: Response, next: NextFunction) {
   try {
     const authHeader = req.headers.authorization;
+
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({ message: "No autorizado" });
     }

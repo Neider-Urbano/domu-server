@@ -24,3 +24,19 @@ export async function updateProfile(req: Request, res: Response) {
     res.status(500).json({ message: error.message });
   }
 }
+
+export async function getUserById(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+
+    const user = await Usuario.findById(id).select("-contraseña");
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+
+    res.json({ user });
+  } catch (error: any) {
+    res.status(500).json({ message: "Error del servidor." });
+  }
+}
