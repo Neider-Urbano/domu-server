@@ -77,3 +77,34 @@ export async function listPropiedadesByOwner(req: Request, res: Response) {
     res.status(500).json({ message: error.message });
   }
 }
+
+export async function searchPropiedades(req: Request, res: Response) {
+  try {
+    const { q } = req.query;
+
+    if (!q || typeof q !== "string" || q.trim() === "") {
+      return res
+        .status(400)
+        .json({ message: "El parámetro de búsqueda 'q' es requerido." });
+    }
+
+    const searchRegex = new RegExp(q.trim(), "i");
+
+    const propiedades = await Propiedad.find({
+      estado: "disponible",
+      $or: [
+        { nombre: { $regex: searchRegex } },
+        { direccion: { $regex: searchRegex } },
+        { caracteristicas: { $regex: searchRegex } },
+        { tipo: { $regex: searchRegex } },
+      ],
+    });
+
+    res.json({ propiedades });
+  } catch (error: any) {
+    console.error("Error en searchPropiedades:", error);
+    res
+      .status(500)
+      .json({ message: "Error interno del servidor al buscar propiedades." });
+  }
+}

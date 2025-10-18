@@ -24,8 +24,10 @@ export async function createContrato(req: Request, res: Response) {
     } = req.body;
 
     const propiedad = await Propiedad.findById(idPropiedad);
-    if (!propiedad)
+
+    if (!propiedad) {
       return res.status(404).json({ message: "Propiedad no encontrada" });
+    }
 
     if (String(propiedad.idPropietario) !== String(req.user._id)) {
       return res
@@ -61,9 +63,11 @@ export async function getContrato(req: Request, res: Response) {
     return res.status(404).json({ message: "No encontrado" });
   }
 
+  console.log(contrato);
+
   if (
-    String(contrato.idPropietario) !== String(req.user._id) &&
-    String(contrato.idInquilino) !== String(req.user._id)
+    String(contrato.idPropietario._id) !== String(req.user._id) &&
+    String(contrato.idInquilino._id) !== String(req.user._id)
   ) {
     return res.status(403).json({ message: "No tienes acceso" });
   }

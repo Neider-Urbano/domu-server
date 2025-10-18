@@ -40,3 +40,30 @@ export async function getUserById(req: Request, res: Response) {
     res.status(500).json({ message: "Error del servidor." });
   }
 }
+
+export async function buscarUsuario(req: Request, res: Response) {
+  try {
+    const { q } = req.query;
+
+    if (!q || typeof q !== "string") {
+      return res
+        .status(400)
+        .json({ message: "Se requiere un parámetro de búsqueda (q)." });
+    }
+
+    const regex = new RegExp(q, "i");
+
+    const usuarios = await Usuario.find({
+      $and: [
+        {
+          $or: [{ nombre: regex }, { correo: regex }],
+        },
+        { rol: { $ne: "propietario" } },
+      ],
+    }).select("-contraseña");
+
+    res.json({ usuarios });
+  } catch (error: any) {
+    res.status(500).json({ message: "Error del servidor." });
+  }
+}
